@@ -21,6 +21,7 @@ Participants must have running installations of the **_R_** programming language
   ```R
   rstudioapi::versionInfo()$version
   ```
+- To keep course materials up-to-date on your computer, you also require a **Git** installation (see [here](https://rfortherestofus.com/2021/02/how-to-use-git-github-with-r) and [here](https://happygitwithr.com/rstudio-git-github.html)). A user-friendly option is using the [**_Github Desktop app_**](https://docs.github.com/en/desktop/installing-and-authenticating-to-github-desktop/installing-github-desktop) For alternatives, see [here](https://happygitwithr.com/install-git#install-git), incl. installation instructions. _Note @ Windows users_: I recommend using Github Desktop or [_Git for Windwows_](https://gitforwindows.org/).
 
 Please contact the instructor (hauke.licht@uibk.ac.at) should you encounter issues or errors during setup.
 
