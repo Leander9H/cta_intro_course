@@ -1,0 +1,11 @@
+**/.DS_Store
+
+.Rproj.user
+.Rhistory
+.RData
+.Ruserdata
+*.Rproj
+
+README.html
+
+get_pkg_versions.R
