@@ -42,6 +42,7 @@ Please contact the instructor (hauke.licht@uibk.ac.at) should you encounter issu
 2. Open the file [setup.R](./setup.R)
 3. Run the R script by clicking "Run" or pressing ⌘ + ⏎ (macOS) or Ctrl+Enter (Windows)
 
+**_Note:_** Installing all the packages that we will use throughout the course may take a while, depending on your internet connection and computer speed. Please be patient.
 
 
 
