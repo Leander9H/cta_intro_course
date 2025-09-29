@@ -38,8 +38,9 @@ Please contact the instructor (hauke.licht@uibk.ac.at) should you encounter issu
 
 ### 3. setup `renv` and install the required packages
 
-1. Open the file [setup.R](./setup.R)
-2. Run the R script by clicking "Run" or pressing ⌘ + ⏎ (macOS) or Ctrl+Enter (Windows)
+1. Open the R project in Rstudio (if not already open)
+2. Open the file [setup.R](./setup.R)
+3. Run the R script by clicking "Run" or pressing ⌘ + ⏎ (macOS) or Ctrl+Enter (Windows)
 
 
 
