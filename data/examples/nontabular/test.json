@@ -1,0 +1,11 @@
+{
+  "null_field": null,
+  "logical_field": true,
+  "numeric_field": 1,
+  "string_field": "a value",
+  "list_field": ["a", "list", "of", "values"],
+  "dictionary_field": {
+    "subfield1": "another value",
+    "subfield2": ["a", "list", "of", "subvalues"]
+  }
+}

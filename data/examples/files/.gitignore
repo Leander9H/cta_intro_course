@@ -1,0 +1,5 @@
+*.tex
+*.Rmd
+*.qmd
+*.log
+test_file_files/
