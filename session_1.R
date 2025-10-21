@@ -26,7 +26,7 @@ textstat_frequency(dfm_dta, 10)
 freq <- textstat_frequency(dfm_dta)
 tail(freq, 10)
 
-  toks_clean <- corpus(data_corpus_ukmanifestos) %>%
+toks_clean <- corpus(data_corpus_ukmanifestos) %>%
   tokens(remove_punct = TRUE) %>%
   tokens_remove(stopwords("en")) %>%
   tokens_wordstem() %>%

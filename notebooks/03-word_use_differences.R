@@ -95,6 +95,8 @@ diff_freq[1:4]
 stats <- get_top_n_terms(diff_freq)
 plot_scores(x = stats, xlab = "Difference in word counts")
 
+##### pro: simple statistics
+##### con: whoever speaks more will dominate
 
 # token proportion differences ----
 
@@ -112,6 +114,10 @@ diff_prop[1:4]
 stats <- get_top_n_terms(diff_prop)
 plot_scores(x = stats, xlab = "Difference in word proportions")
 
+#### pro: simple; word proportions > word counts, thus no volume bias
+#### cons: high frequency non-stop and non-partisan words (e.g. continue, although you could argue that "continue" might be a partisan word) will dominate
+
+
 # log odds ---
 
 # add small constant to avoid zero proportions
@@ -126,6 +132,11 @@ log_odds[1:4]
 
 stats <- get_top_n_terms(log_odds)
 plot_scores(x = stats, xlab = "Log-odds ratio")
+
+#### pros: informative to a certain degree (lab: inequality; con: property-ownership) + better measure for saying how much partisan a word is
+#### cons: due to lack of symmetry, words appearing at the top of this list are mostly obscure ones (not informative)
+#           ;by obscure words I mean basically just words which are more special than common stopwords, but still not partisan
+
 
 
 # smoothed log-odds ----
@@ -143,6 +154,9 @@ log_odds_smooth[1:4]
 stats <- get_top_n_terms(log_odds_smooth)
 plot_scores(x = stats, xlab = "Log-odds ratio (smoothed)")
 
+#### pro: advantage of adding a little bit to the zeroes (in a small sample, make unseen events seen) in order to avoid zero probabilities (ensures a stable model)
+#### cons: but regardless of the zero treatment: words are dominant that are not necessarily common but rather more specific but not partisan (tecs, gifts): semantic validity is limited.
+#           Consequently, there's a failure for accounting for sample variation: dominated by obscure/extreme words (which are often words that are not very frequent and thus have a higher variance)
 
 # Fightin' words ----
 source(file.path("R", "fightin_words.R"))
@@ -177,3 +191,10 @@ plot_scores(
   xlab = "Fightin' words z-score"
 )
 
+# What we do: P(w|p) -> based on p, what is the probability of a word (model the choice of word as a function of party)
+#             We may want to know how the usage of a word differs between groups (in order to perform feature selection or evalution (see p. 19 Monre et. al.))
+#             So as I understand, if you apply this z-score you use the knowledge of the variance in order to account for it:
+#             which means that you not just evaluate features based on their point estimates but also by the certainty about those estimates (which is derived from variance)
+
+#### pros: normalization -> usage of z-scores in order to account for variance (not just point estimates, but we also try to implement the certainty about those estimates by looking at the distance (number of standard deviations) between a data point and the mean of this group of data)
+#### cons: there are still some obscure words; problem of overfitting due to nonzero weights (which can be overcome by implementing a threshold value as a selection mechanism or other shrinkage-methods)
