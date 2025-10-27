@@ -187,3 +187,27 @@ textstat_fighting_words_pairwise <- function(grps, grp.var, grp.var.lvls, .x, .t
   # return
   return(res)
 }
+
+
+plot_scores <- function(
+    x, 
+    feature.var = "feature", 
+    value.var = "value", 
+    group.var = "group", 
+    xlab = "Score",
+    ncol = 2
+) {
+  x_lims_ <- max(abs(x[[value.var]]), na.rm = TRUE) * c(-1.05, 1.05)
+  ggplot(
+    data = x,
+    mapping = aes(
+      y    = reorder(.data[[feature.var]], abs(.data[[value.var]])),
+      x    = .data[[value.var]],
+      fill = .data[[group.var]]
+    )
+  ) +
+    geom_col() + xlim(x_lims_) +
+    facet_wrap(vars(.data[[group.var]]), ncol = ncol, scales = "free_y", space = ifelse(ncol==1, "free_y", "fixed")) +
+    labs(y = NULL, x = xlab) +
+    theme(legend.position = "none")
+}
