@@ -96,7 +96,7 @@ stats <- get_top_n_terms(diff_freq)
 plot_scores(x = stats, xlab = "Difference in word counts")
 
 ##### pro: simple statistics
-##### con: whoever speaks more will dominate
+##### con: whoever speaks more will dominate; sampling variability (thats why you apply z-scores)
 
 # token proportion differences ----
 
@@ -116,7 +116,7 @@ plot_scores(x = stats, xlab = "Difference in word proportions")
 
 #### pro: simple; word proportions > word counts, thus no volume bias
 #### cons: high frequency non-stop and non-partisan words (e.g. continue, although you could argue that "continue" might be a partisan word) will dominate
-
+#           still ignores sampling variability
 
 # log odds ---
 
