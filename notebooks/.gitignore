@@ -2,3 +2,6 @@ Makefile
 intro/*
 !*/*.qmd
 !*/*.html
+
+**/*_cache
+**/*_files
