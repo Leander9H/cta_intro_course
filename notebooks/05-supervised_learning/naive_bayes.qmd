@@ -125,24 +125,39 @@ It is important to apply the same pre-processing steps to the train and test dat
 
 Since our goal is to recognize whether a news article is about the economic topic, we pre-process the texts as follows:
 
-1. We keep symbols and numbers. 
-  Typically, we'd remove them. 
+1. We keep symbols and numbers but remove punctuation to reduce noise.
+  Typically, we'd remove all. 
   But our goal is to identify articles about the economy.
   Numbers (e.g., "inflation rose by 2%") and symbols (e.g., "$100") are likely to be informative features for this task.
 2. We lowercase all tokens to reduce sparsity.
    This might cause some problems (e.g., cannot distinguish "US" from "us" or "FED" from "fed"), but overall it helps to reduce sparsity.
-3. To further reduce sparsity, we replace numbers in texts with a placeholder `NUM` (as far as possible)
-4. We create $n$-grams (unigrams, bigrams, trigrams) to capture multi-word expressions that might be informative (e.g., "stock market", "interest rate").
-5. We lemmatize the tokens to reduce sparsity (e.g., "running", "ran", "runs" &rArr; "run").
-6. We remove stopwords to focus on content words.
-7. We remove punctuation to reduce noise.
+3. We create $n$-grams (unigrams, bigrams, trigrams) to capture multi-word expressions that might be informative (e.g., "stock market", "interest rate").
+4. We lemmatize the tokens to reduce sparsity (e.g., "running", "ran", "runs" &rArr; "run").
+5. We remove stopwords to focus on content words.
 
+
+```{r dtm}
+#| cache: true
+dtm <- df |> 
+  corpus(text_field = "text", docid_field = "uid") |> 
+  tokens(remove_symbols=FALSE, remove_numbers=FALSE) |> 
+  tokens_tolower() |> 
+  tokens_ngrams(n = 1:3) |> 
+  # lemmatize (based on  https://stackoverflow.com/a/62330539)
+  tokens_replace(pattern = lexicon::hash_lemmas$token, replacement = lexicon::hash_lemmas$lemma) |> 
+  tokens_remove(stopwords("en")) |>
+  dfm()
+```
 
 ```{r}
 #| cache: true
+#| eval: false
+#| include: false
+# NOTE: you can try this more complex alternative if you want
+# here, I further reduce sparsity by replacing numbers in texts with a placeholder `NUM` (as far as possible)
 toks <- df |> 
   corpus(text_field = "text", docid_field = "uid") |> 
-  tokens(remove_symbols=FALSE, remove_numbers=FALSE, xptr = TRUE) |> 
+  tokens(remove_symbols=FALSE, remove_numbers=FALSE, remove_punct=TRUE, xptr = TRUE) |> 
   tokens_tolower()
 
 feats <- unique(unlist(toks))
@@ -165,20 +180,6 @@ dim(dtm)
 ```
 
 
-```{r dtm}
-#| cache: true
-#| eval: false
-dtm <- df |> 
-  corpus(text_field = "text", docid_field = "uid") |> 
-  tokens(remove_symbols=FALSE, remove_numbers=FALSE) |> 
-  tokens_tolower() |> 
-  tokens_remove(stopwords("en")) |>
-  tokens_ngrams(n = 1:3) |> 
-  # lemmatize (based on  https://stackoverflow.com/a/62330539)
-  tokens_replace(pattern = lexicon::hash_lemmas$token, replacement = lexicon::hash_lemmas$lemma) |> 
-  tokens(remove_punct=TRUE) |> 
-  dfm()
-```
 
 In the next step, we separate the train and test data.
 We then apply all data-driven pre-processing only to the test set.
@@ -229,7 +230,7 @@ The `qunateda.textmodels` package makes it super easy to fit a naive bayes model
 nb_model <- textmodel_nb(
   x = dtm_train, # the document feature matrix with trainining documents text representations
   y = docvars(dtm_train, "label"), # the vector indicating training documents' true labels
-  distribution = "Bernoulli" # set this when there are only 2 label classes ("multinomial" otherwise)
+  distribution = "Bernoulli" # set this to binarize feature counts (otherwise "multinomial")
 )
 ```
 
@@ -338,64 +339,6 @@ In many cases one of the classes' predicted probability is close to 1.0.
 ggplot(mapping = aes(x = y_test_probs[ , 1])) + 
   geom_histogram() + 
   xlab('pred. prob. for label class "economy"')
-```
-
-```{r}
-#| include: false
-#| echo: false
-#| eval: false
-newdata <- dtm_test[1, ]
-
-# make sure that all features for which there are a parameters are  in the DFM
-newdata <- quanteda.textmodels:::force_conformance(newdata, colnames(nb_model$param), force = TRUE)
-
-# binarize feature indicators (aka one-hot-encoding)
-newdata <- dfm_weight(newdata, "boolean", force = TRUE)
-
-# get log of parameters 
-present <- log(nb_model$param)
-nonpresent <- log(1 - nb_model$param)
-dim(present); dim(nonpresent) 
-
-# get the theshold
-threshold <- .Machine$double.eps
-# clip infinte values
-present[is.infinite(present)] <- max(-1e+05, log(threshold))
-nonpresent[is.infinite(nonpresent)] <-max(-1e+05, log(threshold))
-
-# compute probability of positive class
-presence_prob <- Matrix::tcrossprod(newdata, present)
-
-# compute probability of negative class 
-nonpresence_prob <- matrix(
-  base::colSums(t(nonpresent)),
-  nrow = nrow(presence_prob),
-  ncol = ncol(presence_prob),
-  byrow = TRUE
-) - Matrix::tcrossprod(newdata, nonpresent)
-
-# get the log likelihood of examples for each class
-loglik <- presence_prob + nonpresence_prob
-
-
-# get the class-conditional log likelihood
-logpos <- t(t(loglik) + log(nb_model$priors))
-
-# convert to proability
-# NOTE: init empty matrix
-result <- matrix(
-  NA,
-  ncol = ncol(logpos),
-  nrow = nrow(logpos),
-  dimnames = dimnames(logpos)
-)
-# iterate over classes
-for (j in seq_len(ncol(logpos))) {
-  base_lpl <- logpos[, j]
-  result[, j] <- 1 / (1 + rowSums(exp(logpos[,-j, drop = FALSE] - base_lpl)))
-}
-
-round(result, 5)
 ```
 
 # Evaluation
@@ -559,6 +502,12 @@ dtm_test@docvars <- dtm_test@docvars |>
 table(docvars(dtm_test, "metadata__decade"))
 ```
 
+::: {.callout-note}
+
+In the cell above, I use the `@` to directly access the data frame of document variables attached to `dtm_test`.
+This is equivalent to `docvars(dtm_testm)` but gives me a little bit more flexibility to dynamically create  new document variables.
+:::
+
 To compute predictive performance by subgroup we,
 
 1. define two helper functions for computing precision and recall
@@ -612,5 +561,6 @@ For example, in documents published in the 2000s, the ration of precision to rec
 mets |>
   ggplot(mapping = aes(y = pr_ratio, x = decade)) + 
     geom_col(alpha = 0.9) + 
+    ylim(0, 2) +
     labs(y = "ratio: precision / recall", x = "decade")
 ```
