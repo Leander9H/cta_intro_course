@@ -62,20 +62,22 @@ dtm <- corp |>
 
 # NOTE: no need to trim the DFM for dictionary application
 
-# apply LSD dictionary ----
+######### apply LSD dictionary ################
 
-data("data_dictionary_LSD2015" , package = "quanteda.sentiment")
+names(data_dictionary_NRC)
+
+data("data_dictionary_NRC" , package = "quanteda.sentiment")
 
 # read the dictioanr documentation
-help(data_dictionary_LSD2015, package = "quanteda.sentiment")
+help(data_dictionary_NRC, package = "quanteda.sentiment")
 
 df_scored <- dtm |> 
-  dfm_lookup(dictionary = data_dictionary_LSD2015) |> 
+  dfm_lookup(dictionary = data_dictionary_NRC) |> 
   convert(to = "data.frame", docid_field = "articleid") |> 
   bind_cols(docvars(dtm)) |> 
   mutate(
-    total_neg = negative+neg_positive,
-    total_pos = positive+neg_negative,
+    total_neg = negative,
+    total_pos = positive,
     # see formula (1) in Proksch et al. (2019) and Lowe et al. (2011)
     score = log( (total_pos+0.5) / (total_neg+0.5) )
   )
@@ -92,7 +94,7 @@ ggplot(df_scored, aes(x = sentiment, y = score)) +
   labs(
     title = paste0("Pearson's r = ", round(corr, 2)),
     x = "average human rating (0-10)",
-    y = "LSD2015 dictionary scores (log odds ratio)"
+    y = "NRC dictionary scores (log odds ratio)"
   ) + 
   theme_bw() + 
   theme(legend.position = "none") 
@@ -105,3 +107,55 @@ ggplot(df_scored, aes(x = sentiment, y = score)) +
 
 # see available dictionaries
 data(package = "quanteda.sentiment")
+
+
+
+
+
+
+#### alternative #####
+
+names(data_dictionary_HuLiu)
+
+data("data_dictionary_HuLiu" , package = "quanteda.sentiment")
+
+# read the dictioanr documentation
+help(data_dictionary_HuLiu, package = "quanteda.sentiment")
+
+df_scored <- dtm |> 
+  dfm_lookup(dictionary = data_dictionary_HuLiu) |> 
+  convert(to = "data.frame", docid_field = "articleid") |> 
+  bind_cols(docvars(dtm)) |> 
+  mutate(
+    total_neg = negative,
+    total_pos = positive,
+    # see formula (1) in Proksch et al. (2019) and Lowe et al. (2011)
+    score = log( (total_pos+0.5) / (total_neg+0.5) )
+  )
+
+corr <- cor(df_scored$sentiment, df_scored$score, method = "pearson")
+
+ggplot(df_scored, aes(x = sentiment, y = score)) + 
+  geom_point(alpha = 0.8, size = 0.1, color = "darkgray") +
+  geom_smooth(method = "lm", color = "black") +
+  lims(
+    x = c(0, 10),
+    y = range(df_scored$score)*c(0.9, 1.1)
+  ) +
+  labs(
+    title = paste0("Pearson's r = ", round(corr, 2)),
+    x = "average human rating (0-10)",
+    y = "NRC dictionary scores (log odds ratio)"
+  ) + 
+  theme_bw() + 
+  theme(legend.position = "none") 
+
+# NOTE: the correlation with human's sentiment judgments is only very weak
+
+# with other dictionaries ----
+
+# TODO: replicate the above analysis with other dictionaries below
+
+# see available dictionaries
+data(package = "quanteda.sentiment")
+

@@ -37,7 +37,42 @@ table(df$metadata__split)
 
 df_train <- df[df$metadata__split == "train", ]
 
+
+
+
+
 # TODO: construct the DFM for the train split
+df_train <- df[df$metadata__split == "train", ]
+
+corp <- corpus(df_train, text_field = "text", docid_field = "uid")
+
+dfm_trimmed <- corp |> 
+  tokens(
+    remove_punct=TRUE, 
+    remove_symbols=TRUE,
+    remove_numbers=TRUE
+  ) |> 
+  as.tokens_xptr() |>
+  tokens_tolower() |> 
+  tokens_remove(stopwords("en")) |>
+  # NOTE: we add something new here: n-grams (see https://en.wikipedia.org/wiki/N-gram)
+  tokens_ngrams(n = 1:3) |> 
+  # lemmatize (based on  https://stackoverflow.com/a/62330539)
+  tokens_replace(pattern = lexicon::hash_lemmas$token, replacement = lexicon::hash_lemmas$lemma) |> 
+  dfm() |> 
+  dfm_trim(
+    min_termfreq = 10, termfreq_type = "count",
+    max_docfreq = 0.85, docfreq_type = "prop"
+  )
+
+# group by label category (required by fightin' words method for group's word usage differences)
+dtm_by_label <- dfm_group(x = dfm_trimmed, groups = docvars(dfm_trimmed, "label"))
+
+
+
+
+
+
 
 # TODO: group DFM by label
 
