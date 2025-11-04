@@ -1,8 +1,8 @@
 # +~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~+~ #  
 #
-#' @title  Induce populist dictionary terms from human-coded documents
+#' @title  Train a Naive Bayes populism classifier
 #' @author Hauke Licht
-#' @date   2025-10-27
+#' @date   2025-11-04
 #' @note   We use data from the paper 
 #' 
 #'           Dai, Y., & Kustov, A. (2022). When Do Politicians Use Populist 
@@ -15,13 +15,11 @@
 # setup ----
 
 library(quanteda)
-# TODO: install the "lexicon" package if you don't have it yet
+library(quanteda.textmodels)
 library(readr)
 library(dplyr)
 library(ggplot2)
 set_theme(theme_minimal())
-
-source(file.path("R", "fightin_words.R"))
 
 # load and prepare the data ----
 
@@ -29,22 +27,27 @@ fp <- file.path("data", "labeled", "dai_when_2022", "dai_when_2022-campaignspeec
 
 df <- read_csv(fp)
 
-# NOTE: the label categories are "accept" (populist) and "reject" (not populist)
-df$label <- factor(df$label, c("accept", "reject"), c("populist", "not populist"))
+# NOTE: the label categories are "yes" (populist) and "no" (not populist)
+df$populist <- factor(df$label, c("accept", "reject"), c("yes", "no"))
 
 # use pre-define train/test split
 table(df$metadata__split)
 
-df_train <- df[df$metadata__split == "train", ]
+prop.table(with(df, table(metadata__split, populist)), 1)
 
-# TODO: construct the DFM for the train split
+# TODO: construct the DFM
 
-# TODO: group DFM by label
+# TODO: create the train data (using docvar "metadata__split") and apply further preprocessing if needed
 
-# TODO: compute fightin' words statistics
+# TODO: fit the NB model
 
-# TODO: construct dictionary of significant populist and non-populist terms
+# TODO what are the most important features for the populist label class?
 
-# TODO: apply to train split
+# TODO: evaluate predictive performance in terms of precision, recall and the F1 score
 
-# TODO: apply to test split
+# TODO: evaluate the models predictive performance for candidates "Donald J. Trump" and "Barack Obama"
+
+
+
+
+

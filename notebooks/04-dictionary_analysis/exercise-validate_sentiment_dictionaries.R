@@ -13,7 +13,7 @@
 
 # setup ----
 library(quanteda)
-# TODO: renv:_install("quanteda/quanteda.sentiment")
+# TODO: renv::install("quanteda/quanteda.sentiment")
 library(quanteda.sentiment)
 library(readr)
 library(dplyr)
