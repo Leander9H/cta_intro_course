@@ -29,8 +29,8 @@ fp <- file.path("data", "labeled", "dai_when_2022", "dai_when_2022-campaignspeec
 
 df <- read_csv(fp)
 
-# NOTE: the label categories are "yes" (populist) and "no" (not populist)
-df$label <- factor(df$label, c("yes", "no"), c("populist", "not populist"))
+# NOTE: the label categories are "accept" (populist) and "reject" (not populist)
+df$label <- factor(df$label, c("accept", "reject"), c("populist", "not populist"))
 
 # use pre-define train/test split
 table(df$metadata__split)
