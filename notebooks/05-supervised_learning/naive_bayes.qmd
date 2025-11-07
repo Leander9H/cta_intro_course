@@ -475,7 +475,7 @@ f1_score <- 2 * (precision * recall) / (precision + recall)
 f1_score
 ```
 
-## Assesing bias
+## Assessing bias
 
 Bias means that measurement error is systematic.
 Systematic how?
