@@ -40,10 +40,20 @@ data_corpus_immigrationnews <- corpus_subset(data_corpus_immigrationnews, paperN
 #  - remove stopwords
 #  - trim the DTM to remove very infrequent and very frequent terms
 #  - IMPORTANT: name the resulting object "dtm"
+dtm <- data_corpus_immigrationnews %>%
+  tokens(remove_numbers = T, remove_symbols = T, remove_punct = T) %>%
+  tokens_tolower() %>%
+  tokens_replace(pattern = lexicon::hash_lemmas$token, replacement = lexicon::hash_lemmas$lemma) %>%
+  tokens_ngrams(n = 1:3) %>%
+  tokens_remove(stopwords("en")) %>%
+  dfm()
+
+dtm <- dfm_trim(dtm, min_termfreq = 10, termfreq_type = "count",
+                max_docfreq = 0.85, docfreq_type = "prop")
 
 # aggregate the data by news paper
 # NOTE: the news articles are too sparse and its too much data to efficiently fit
-#        a Wordfish model Therefore, we aggregate the data by newspaper
+#        a Wordfish model. Therefore, we aggregate the data by newspaper
 dtm_grouped <- dfm_group(dtm, group = docvars(dtm, "paperName"))
 
 # NOTE: let's assume that The Guardian < The Daily Mail on the latent dimension
