@@ -60,7 +60,7 @@ tm <- LDA(
 # NOTE: this is going to run for a few seconds/minutes
 
 # NOTE: alternatively, load the pre-fitted model from file
-# load(file.path("models", "lda_ungd2017_30topics.RData.RData"))
+# load(file.path("models", "lda_ungd2017_30topics.RData"))
 
 # extract the model parameters 
 tm_estimates <- posterior(tm)
