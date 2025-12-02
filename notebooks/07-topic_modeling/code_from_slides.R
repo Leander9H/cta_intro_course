@@ -153,6 +153,8 @@ plot_topic_words(tm, topic.nr = 26, n.words = 30)
 # inspect content  of topic 27
 plot_topic_words(tm, topic.nr = 27, n.words = 30)
 
+
+
 # aggregate topic proportions at country level ----
 
 # determine country of speech paragraph
@@ -181,5 +183,49 @@ plot_heatmap(thetas_country[country_names$Asia, ], what = "topic")
 
 # show country-level topic focus for European countries
 plot_heatmap(thetas_country[country_names$Europe, ], what = "topic")
+
+
+
+plot_topic_words(tm, topic.nr = 20, n.words = 30)
+
+# show examples for topic 17
+topic_nr_20 <- 17
+doc_ids_20 <- top_docs_per_topic[[topic_nr_20]]
+doc_ids_20
+
+# get distinctive terms of topic
+terms(tm, 20)[, topic_nr_20]
+
+# first repr. doc 
+cat(stringr::str_wrap(as.character(speech_paragraphs[doc_ids_20[1]]), width = 60, exdent = 1))
+
+
+# show examples for topic 4
+topic_nr_20 <- 4
+doc_ids_20 <- top_docs_per_topic[[topic_nr_20]]
+doc_ids_20
+
+# get distinctive terms of topic
+terms(tm, 20)[, topic_nr_20]
+
+# first repr. doc 
+cat(stringr::str_wrap(as.character(speech_paragraphs[doc_ids_20[1]]), width = 60, exdent = 1))
+
+
+## replicate ##
+# get paragraphs from speech by Austrian representative
+idxs <- grep("North Korea", rownames(thetas))
+plot_heatmap(thetas[idxs, ], what = "topic")
+
+plot_topic_words(tm, topic.nr = 17, n.words = 30)
+plot_topic_words(tm, topic.nr = 4, n.words = 30)
+plot_topic_words(tm, topic.nr = 20, n.words = 30)
+plot_topic_words(tm, topic.nr = 30, n.words = 30)
+plot_topic_words(tm, topic.nr = 21, n.words = 30)
+
+
+
+
+
 
 
