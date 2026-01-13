@@ -459,11 +459,11 @@ cat("↳ Recall: ", round(recall, 3))
 
 Recall and precision give us important information about whether a model tends to over- or under-estimate how prevalent the positive label class (here, "economy") is:
 
-- **_low_ precision** means that many of the examples predicted to be a positive instance (here, about the economic topic) are actual false predictions $\Rightarrow$ the model tends to _overestimate_ the prevalence of the positive label class
-- **_low_ recall** means that many of the acutal positive examples are misclassified by the model $\Rightarrow$ the model tends to _underestimate_ the prevalence of the positive label class
-- viewed together
-  - the model overestimates prevalence if precision much higher than recall (i.e., precision/recall > 1)
-  - the model underestimates prevalence if precision is much lower than recall (i.e., precision/recall < 1)
+- **_low_ precision** means that many of the examples predicted to be a positive instance (here, about the economic topic) are actual false predictions $\Rightarrow$ all else being equal, the model _overestimate_ the prevalence of the positive label class
+- **_low_ recall** means that many of the actual positive examples are misclassified by the model $\Rightarrow$ all else being equal, the model _underestimate_ the prevalence of the positive label class
+  - viewed together
+  - the model underestimates prevalence if precision much higher than recall (i.e., precision/recall > 1)
+  - the model overestimates prevalence if precision is much lower than recall (i.e., precision/recall < 1)
   - the model just performs poorly if both precision and recall are low
   
 In our precision/recall is `r precision/recall`, suggesting that the risk of overestimating is not negligible.

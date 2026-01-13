@@ -71,15 +71,19 @@ We'll download them to the `models/` filder of our course's Github project:
 
 ```{r}
 #| echo: false
+# NOTE: only run this line when executing from the .qmd file
 models_path <- file.path("..", "..", "models")
 ```
 
+```{r}
+#| eval: false
+models_path <- file.path("models")
+```
 
 ```{r}
 #| eval: false
-models_path <- file.path("..", "..", "models")
 url <- "https://nlp.stanford.edu/data/wordvecs/glove.2024.wikigiga.50d.zip"
-dest <- file.path(model_path, basename(url))
+dest <- file.path(models_path, basename(url))
 # NOTE: depending in your network connection, this will take 3-5 minutes
 if (!file.exists(dest)) {
   require(curl) # TODO (if needed) `renv::install("curl")`
